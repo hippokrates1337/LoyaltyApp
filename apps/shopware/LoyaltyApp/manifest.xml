@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/Framework/App/Manifest/Schema/manifest-3.0.xsd">
+    <meta>
+        <name>LoyaltyApp</name>
+        <label>LoyaltyApp — Reviews &amp; Social Proof</label>
+        <label lang="de-DE">LoyaltyApp — Bewertungen &amp; Social Proof</label>
+        <description>Collect verified product reviews and display them on your storefront with star ratings and SEO structured data.</description>
+        <description lang="de-DE">Sammeln Sie verifizierte Produktbewertungen und zeigen Sie diese mit Sternebewertungen und SEO-strukturierten Daten in Ihrem Shop an.</description>
+        <author>LoyaltyApp Dev</author>
+        <copyright>(c) LoyaltyApp Dev</copyright>
+        <version>0.0.1</version>
+        <license>MIT</license>
+    </meta>
+
+    <setup>
+        <!-- Replace with your actual app URL (ngrok in dev, production domain in prod) -->
+        <registrationUrl>https://REPLACE_WITH_APP_URL/api/app/register</registrationUrl>
+        <!-- Must match APP_SECRET in .env -->
+        <secret>localDevSecretDoNotUseInProduction</secret>
+    </setup>
+
+    <admin>
+        <module name="loyalty-reviews"
+                source="https://REPLACE_WITH_APP_URL/admin"
+                parent="sw-catalogue">
+            <label>Reviews</label>
+            <label lang="de-DE">Bewertungen</label>
+        </module>
+    </admin>
+
+    <permissions>
+        <read>customer</read>
+        <read>order</read>
+        <read>order_line_item</read>
+        <read>order_delivery</read>
+        <read>product</read>
+        <read>state_machine_state</read>
+    </permissions>
+
+    <webhooks>
+        <webhook name="orderPlaced" url="https://REPLACE_WITH_APP_URL/api/webhooks/order" event="checkout.order.placed"/>
+        <webhook name="orderCompleted" url="https://REPLACE_WITH_APP_URL/api/webhooks/order" event="state_enter.order.state.completed"/>
+        <webhook name="orderDeliveryShipped" url="https://REPLACE_WITH_APP_URL/api/webhooks/order" event="state_enter.order_delivery.state.shipped"/>
+        <webhook name="orderCancelled" url="https://REPLACE_WITH_APP_URL/api/webhooks/order-cancelled" event="state_enter.order.state.cancelled"/>
+    </webhooks>
+</manifest>

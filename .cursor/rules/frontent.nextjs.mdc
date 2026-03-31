@@ -1,0 +1,54 @@
+---
+title: "Frontend UI — LoyaltyApp (Reviews & Social Proof)"
+globs:
+  - 'apps/web/app/admin/**'
+  - 'apps/web/app/submit-review/**'
+  - 'apps/web/app/admin/**/*.tsx'
+  - 'apps/web/app/submit-review/**/*.tsx'
+  - 'apps/web/components/**'
+auto_apply: true
+always_apply: false
+tags:
+  - frontend
+  - nextjs
+  - react
+---
+
+
+# Frontend UI rules — LoyaltyApp (Reviews & Social Proof)
+
+## Project basics
+- Framework: **Next.js** (App Router), **TypeScript** with `strict` enabled.
+- Styling: **Tailwind CSS v4**. Keep UI minimal and accessible.
+- Package manager: **pnpm** (workspaces).
+
+## Pages
+- `apps/web/app/admin/` — Merchant admin UI, rendered in Shopware admin iframe.
+  - Dashboard, Reviews moderation, Settings, GDPR tools.
+  - Authenticated via Shopware iframe handshake.
+- `apps/web/app/submit-review/[token]/` — Customer review submission page.
+  - Standalone page, not embedded in storefront.
+  - Token-authenticated (one-time-use).
+
+## File & folder conventions
+- `apps/web/components/` — small, reusable UI components.
+- `apps/web/hooks/` — React hooks.
+- `apps/web/lib/` — utility functions, API client wrapper.
+
+## I18n
+- Support English and German.
+- Keep translation strings in dedicated files under `apps/web/i18n/`.
+
+## UX & accessibility
+- Buttons and forms must have `aria-*` attributes.
+- Forms must validate on client side before submission.
+- Review submission page must be mobile-friendly.
+
+## Testing
+- Unit tests: Vitest + React Testing Library for components.
+- Lint: ESLint + Prettier. Run via `pnpm lint`.
+
+## Widget (storefront)
+- Widget code lives at `apps/shopware/LoyaltyApp/Resources/app/storefront/`.
+- Uses scoped CSS (`.la-widget-*` class prefix) to avoid theme conflicts.
+- Injects JSON-LD structured data for SEO.

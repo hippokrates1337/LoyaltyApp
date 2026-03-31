@@ -1,0 +1,59 @@
+---
+title: "Next.js App — LoyaltyApp (Reviews & Social Proof)"
+globs:
+  - 'apps/web/**'
+  - 'apps/web/**/*.ts'
+  - 'apps/web/**/*.tsx'
+auto_apply: true
+always_apply: false
+tags:
+  - backend
+  - nextjs
+  - api
+---
+
+
+# Next.js App rules — LoyaltyApp (Reviews & Social Proof)
+
+## Project basics
+- Framework: **Next.js** (App Router), **TypeScript** with `strict` enabled.
+- This is a unified app: API routes handle all backend logic, pages handle the admin UI and review submission.
+- DB: **Postgres** via **Prisma** (`@loyalty/db` workspace package).
+- Email: **Postmark** (`@loyalty/email` workspace package).
+- Package manager: **pnpm** (workspaces).
+
+## API routes (`apps/web/app/api/`)
+- Shopware lifecycle: `/api/app/register`, `/api/app/confirm`, `/api/app/uninstall`
+- Webhooks: `/api/webhooks/order`, `/api/webhooks/order-cancelled` — verify HMAC signature before processing.
+- Widget: `/api/widget/reviews` — public, CORS-restricted to shop domain, rate-limited.
+- Review submission: `/api/review-submission/[token]` — token-authenticated.
+- Admin: `/api/admin/*` — authenticated via Shopware iframe handshake.
+- Cron: `/api/cron/*` — protected by CRON_SECRET header.
+- Health: `/api/health`
+
+## Webhooks & security
+- All Shopware webhooks must verify the HMAC-SHA256 signature.
+- Webhook handlers must be **idempotent** (dedup by order_id + product_id).
+- Store credentials encrypted (AES-256-GCM) using ENCRYPTION_KEY env var.
+
+## Data model
+- merchants(shop_id, shop_url, api_key, secret_key, shop_secret, settings_json)
+- reviews(merchant_id, product_id, rating, title, body, author_name, author_email, status, merchant_reply)
+- review_requests(merchant_id, order_id, product_id, customer_email, token, scheduled_at, status)
+
+## Email scheduling
+- Database-driven cron: review_requests with scheduled_at, polled every 5 minutes.
+- No Redis/BullMQ — keep it simple for MVP.
+
+## Testing
+- Unit tests: Vitest.
+- Integration tests: mock Shopware payloads, verify DB writes.
+
+## Observability
+- Structured JSON logging via pino.
+- Sentry for error tracking.
+- Health endpoint at /api/health.
+
+## Dev ergonomics
+- Use `APP_URL` env var (ngrok during dev).
+- Keep secrets out of repo. Reference `.env.example`.

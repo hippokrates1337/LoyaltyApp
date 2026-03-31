@@ -1,0 +1,16 @@
+{
+  "name": "@loyalty/email",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Postmark email service and templates for the LoyaltyApp",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {},
+  "dependencies": {
+    "postmark": "^4.0.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

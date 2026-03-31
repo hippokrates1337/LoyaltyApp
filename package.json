@@ -1,0 +1,28 @@
+{
+  "name": "loyalty",
+  "version": "0.0.1",
+  "private": true,
+  "description": "LoyaltyApp — Reviews & Social Proof for Shopware 6.6+",
+  "license": "MIT",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
+  "scripts": {
+    "dev": "pnpm --filter @loyalty/web run dev",
+    "build": "pnpm --filter @loyalty/web run build",
+    "start": "pnpm --filter @loyalty/web run start",
+    "lint": "pnpm --filter @loyalty/web run lint",
+    "type-check": "pnpm --filter @loyalty/web run type-check",
+    "db:generate": "pnpm --filter @loyalty/db run db:generate",
+    "db:migrate:dev": "pnpm --filter @loyalty/db run db:migrate:dev",
+    "db:migrate:deploy": "pnpm --filter @loyalty/db run db:migrate:deploy",
+    "db:studio": "pnpm --filter @loyalty/db run db:studio"
+  }
+}

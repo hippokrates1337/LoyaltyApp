@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id          String   @id @default(uuid()) @db.Uuid
+  shopId      String   @unique @map("shop_id")
+  shopUrl     String   @map("shop_url")
+  apiKey      String   @map("api_key")     // Encrypted at application level
+  secretKey   String   @map("secret_key")  // Encrypted at application level
+  shopSecret  String   @map("shop_secret") // Encrypted at application level
+  settingsJson Json    @default("{}") @map("settings_json") @db.JsonB
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  reviews        Review[]
+  reviewRequests ReviewRequest[]
+
+  @@map("merchants")
+}
+
+model Review {
+  id              String    @id @default(uuid()) @db.Uuid
+  merchantId      String    @map("merchant_id") @db.Uuid
+  productId       String    @map("product_id")
+  reviewRequestId String?   @map("review_request_id") @db.Uuid
+  rating          Int       @db.SmallInt
+  title           String    @db.VarChar(255)
+  body            String    @db.Text
+  authorName      String    @map("author_name") @db.VarChar(255)
+  authorEmail     String    @map("author_email") @db.VarChar(255)
+  verifiedPurchase Boolean  @default(true) @map("verified_purchase")
+  status          String    @default("pending") @db.VarChar(20) // pending, approved, rejected
+  merchantReply   String?   @map("merchant_reply") @db.Text
+  merchantReplyAt DateTime? @map("merchant_reply_at") @db.Timestamptz()
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  moderatedAt     DateTime? @map("moderated_at") @db.Timestamptz()
+
+  merchant      Merchant       @relation(fields: [merchantId], references: [id])
+  reviewRequest ReviewRequest? @relation(fields: [reviewRequestId], references: [id])
+
+  @@index([merchantId, productId, status], name: "idx_reviews_merchant_product_status")
+  @@map("reviews")
+}
+
+model ReviewRequest {
+  id            String    @id @default(uuid()) @db.Uuid
+  merchantId    String    @map("merchant_id") @db.Uuid
+  orderId       String    @map("order_id")
+  productId     String    @map("product_id")
+  customerEmail String    @map("customer_email")
+  customerName  String    @map("customer_name")
+  token         String    @unique
+  scheduledAt   DateTime  @map("scheduled_at") @db.Timestamptz()
+  sentAt        DateTime? @map("sent_at") @db.Timestamptz()
+  status        String    @default("scheduled") @db.VarChar(20) // scheduled, sent, completed, expired, cancelled
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  merchant Merchant @relation(fields: [merchantId], references: [id])
+  reviews  Review[]
+
+  @@unique([orderId, productId], name: "uq_review_request_order_product")
+  @@index([status, scheduledAt], name: "idx_review_requests_status_scheduled")
+  @@map("review_requests")
+}
